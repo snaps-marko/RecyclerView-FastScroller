@@ -40,6 +40,7 @@ import androidx.annotation.StyleableRes
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.content.ContextCompat
 import androidx.core.widget.TextViewCompat
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.CoroutineScope
@@ -785,9 +786,9 @@ class RecyclerViewFastScroller @JvmOverloads constructor(
                                 (newOffset * (recyclerViewItemCount - totalVisibleItems)).roundToInt()
                             )
                         )
-
+                val lastVisibleItemCount = previousTotalVisibleItem.takeIf { layoutManager is GridLayoutManager } ?: previousTotalVisibleItem.plus(1)
                 val toScrollPosition =
-                    min((this.adapter?.itemCount ?: 0) - (previousTotalVisibleItem + 1), position)
+                    min((this.adapter?.itemCount ?: 0) - lastVisibleItemCount, position)
                 safeScrollToPosition(toScrollPosition)
                 position
             }

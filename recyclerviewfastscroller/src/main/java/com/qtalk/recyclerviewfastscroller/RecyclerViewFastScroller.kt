@@ -39,6 +39,7 @@ import androidx.annotation.StyleRes
 import androidx.annotation.StyleableRes
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.content.ContextCompat
+import androidx.core.view.setPadding
 import androidx.core.widget.TextViewCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -122,6 +123,7 @@ class RecyclerViewFastScroller @JvmOverloads constructor(
         val textStyle: Int = R.style.FastScrollerTextAppearance
         val popupPosition: PopupPosition = PopupPosition.BEFORE_TRACK
         val fastScrollDirection: FastScrollDirection = FastScrollDirection.VERTICAL
+        val popupPadding: Int = R.dimen.default_popup_padding
         const val isFixedSizeHandle: Boolean = false
         const val isFastScrollEnabled: Boolean = true
         const val animationDuration: Long = 100
@@ -215,6 +217,12 @@ class RecyclerViewFastScroller @JvmOverloads constructor(
      * The duration for which the handle should remain visible, defaults to -1 (don't hide)
      * */
     var handleVisibilityDuration: Int = -1
+
+    var popupTextPadding: Int = 0
+        set(value) {
+            field = value
+            setPopupPadding()
+        }
 
     // --- internal properties
     private var popupPosition: PopupPosition = Defaults.popupPosition
@@ -367,6 +375,12 @@ class RecyclerViewFastScroller @JvmOverloads constructor(
                     Defaults.textStyle
                 )
             )
+
+            popupTextPadding =
+                attribs.getDimensionPixelSize(
+                    R.styleable.RecyclerViewFastScroller_popupTextPadding,
+                    loadDimenFromResource(Defaults.popupPadding)
+                )
 
             attribs.recycle()
         }
@@ -1030,5 +1044,9 @@ class RecyclerViewFastScroller @JvmOverloads constructor(
         if (BuildConfig.DEBUG) {
             Log.d(TAG, message)
         }
+    }
+
+    private fun setPopupPadding() {
+        popupTextView.setPadding(popupTextPadding)
     }
 }

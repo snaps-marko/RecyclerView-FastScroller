@@ -24,5 +24,6 @@
         <attr name="trackMarginEnd" format="dimension" />
 
         <attr name="handleVisibilityDuration" format="integer" />
+        <attr name="popupTextPadding" format="dimension" />
     </declare-styleable>
 </resources>

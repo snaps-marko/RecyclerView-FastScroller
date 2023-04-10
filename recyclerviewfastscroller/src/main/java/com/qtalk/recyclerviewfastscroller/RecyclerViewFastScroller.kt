@@ -43,12 +43,7 @@ import androidx.core.widget.TextViewCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.Runnable
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -763,11 +758,10 @@ class RecyclerViewFastScroller @JvmOverloads constructor(
         return when (layoutManager) {
             is LinearLayoutManager -> {
                 val totalVisibleItems = layoutManager.getTotalCompletelyVisibleItemCount()
-
                 if (totalVisibleItems == RecyclerView.NO_POSITION) return RecyclerView.NO_POSITION
-
                 // the last item would have one less visible item, this is to offset it.
                 previousTotalVisibleItem = max(previousTotalVisibleItem, totalVisibleItems)
+                val spanCount = if (layoutManager is GridLayoutManager) layoutManager.spanCount else 1
                 // check bounds and then set position
                 val position =
                     if (layoutManager.reverseLayout)
@@ -783,12 +777,10 @@ class RecyclerViewFastScroller @JvmOverloads constructor(
                             recyclerViewItemCount,
                             max(
                                 0,
-                                (newOffset * (recyclerViewItemCount - totalVisibleItems)).roundToInt()
+                                (newOffset * (recyclerViewItemCount - totalVisibleItems / spanCount)).roundToInt()
                             )
                         )
-                val lastVisibleItemCount = previousTotalVisibleItem.takeIf { layoutManager is GridLayoutManager } ?: previousTotalVisibleItem.plus(1)
-                val toScrollPosition =
-                    min((this.adapter?.itemCount ?: 0) - lastVisibleItemCount, position)
+                val toScrollPosition = min(recyclerViewItemCount - previousTotalVisibleItem + spanCount, position)
                 safeScrollToPosition(toScrollPosition)
                 position
             }

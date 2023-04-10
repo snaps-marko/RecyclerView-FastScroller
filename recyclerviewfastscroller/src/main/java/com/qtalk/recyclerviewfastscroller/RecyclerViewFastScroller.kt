@@ -757,10 +757,9 @@ class RecyclerViewFastScroller @JvmOverloads constructor(
         val newOffset = relativeRawPos / (trackLength - handleLength)
         return when (layoutManager) {
             is LinearLayoutManager -> {
+                val spanCount = if (layoutManager is GridLayoutManager) layoutManager.spanCount else 1
                 val totalVisibleItems = layoutManager.getTotalCompletelyVisibleItemCount()
-
                 if (totalVisibleItems == RecyclerView.NO_POSITION) return RecyclerView.NO_POSITION
-
                 // the last item would have one less visible item, this is to offset it.
                 previousTotalVisibleItem = max(previousTotalVisibleItem, totalVisibleItems)
                 // check bounds and then set position
@@ -778,15 +777,11 @@ class RecyclerViewFastScroller @JvmOverloads constructor(
                             recyclerViewItemCount,
                             max(
                                 0,
-                                (newOffset * (recyclerViewItemCount - totalVisibleItems)).roundToInt()
+                                (newOffset * (recyclerViewItemCount - totalVisibleItems / spanCount)).roundToInt()
                             )
                         )
-                if (layoutManager is GridLayoutManager) {
-                    safeScrollToPosition(position)
-                } else {
-                    val toScrollPosition = min((this.adapter?.itemCount ?: 0) - previousTotalVisibleItem.plus(1), position)
-                    safeScrollToPosition(toScrollPosition)
-                }
+                val toScrollPosition = min(recyclerViewItemCount - previousTotalVisibleItem + spanCount, position)
+                safeScrollToPosition(toScrollPosition)
                 position
             }
             else -> {

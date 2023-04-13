@@ -131,6 +131,7 @@ class RecyclerViewFastScroller @JvmOverloads constructor(
         const val hasEmptyItemDecorator: Boolean = true
         const val handleVisibilityDuration: Int = 0
         const val trackMargin: Int = 0
+        const val isEnabledTrackTouch: Boolean = true
     }
 
     /**
@@ -223,6 +224,8 @@ class RecyclerViewFastScroller @JvmOverloads constructor(
             field = value
             setPopupPadding()
         }
+
+    var enabledTrackTouch: Boolean = Defaults.isEnabledTrackTouch
 
     // --- internal properties
     private var popupPosition: PopupPosition = Defaults.popupPosition
@@ -382,6 +385,11 @@ class RecyclerViewFastScroller @JvmOverloads constructor(
                     loadDimenFromResource(Defaults.popupPadding)
                 )
 
+            enabledTrackTouch = attribs.getBoolean(
+                R.styleable.RecyclerViewFastScroller_enabledTrackTouch,
+                Defaults.isEnabledTrackTouch
+            )
+
             attribs.recycle()
         }
         popupAnimationRunnable = Runnable { popupTextView.animateVisibility(false) }
@@ -505,7 +513,7 @@ class RecyclerViewFastScroller @JvmOverloads constructor(
 
             // set the same touch listeners to both handle and track as they have the same functionality
             handleImageView.setOnTouchListener(touchListener)
-            trackView.setOnTouchListener(touchListener)
+            trackView.setOnTouchListener(touchListener.takeIf { enabledTrackTouch })
         }
     }
 

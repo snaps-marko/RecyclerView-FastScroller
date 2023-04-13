@@ -24,6 +24,8 @@
         <attr name="trackMarginEnd" format="dimension" />
 
         <attr name="handleVisibilityDuration" format="integer" />
+        <!-- Marko Add -->
         <attr name="popupTextPadding" format="dimension" />
+        <attr name="enabledTrackTouch" format="boolean" />
     </declare-styleable>
 </resources>

@@ -664,7 +664,12 @@ class RecyclerViewFastScroller @JvmOverloads constructor(
         }
 
         moveViewToRelativePositionWithBounds(handleImageView, offset)
-        moveViewToRelativePositionWithBounds(popupTextView, offset - popupLength)
+        moveViewToRelativePositionWithBounds(
+            view = popupTextView,
+            finalOffset = offset - popupLength + trackMarginStart,
+            min = trackMarginStart.toFloat(),
+            max = trackLength + trackMarginStart
+        )
     }
 
     /**
@@ -673,12 +678,12 @@ class RecyclerViewFastScroller @JvmOverloads constructor(
      * @param view the view to move and
      * @param finalOffset the offset to move to
      * */
-    private fun moveViewToRelativePositionWithBounds(view: View, finalOffset: Float) {
+    private fun moveViewToRelativePositionWithBounds(view: View, finalOffset: Float, min: Float = 0f, max: Float = trackLength) {
         when (fastScrollDirection) {
             FastScrollDirection.HORIZONTAL ->
-                view.x = min(max(finalOffset, 0F), (trackLength - view.width.toFloat()))
+                view.x = min(max(finalOffset, min), (max - view.width.toFloat()))
             FastScrollDirection.VERTICAL ->
-                view.y = min(max(finalOffset, 0F), (trackLength - view.height.toFloat()))
+                view.y = min(max(finalOffset, min), (max - view.height.toFloat()))
         }
     }
 
